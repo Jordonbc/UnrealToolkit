@@ -58,9 +58,15 @@ nav a {
   padding: 10px 10px 10px 10px;
 }
 
+nav #selected {
+  font-weight: bold;
+}
+
 .centered {
-  display: flex;
+  /*display: flex;*/
   justify-content: center;
+  margin: auto;
+  width: 75%;
 }
 
 #project-directory
@@ -74,6 +80,7 @@ h1 {
 
 #project_directory_input {
   margin-right: 14px;
+  margin-left: 14px;
 }
 
 input,

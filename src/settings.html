@@ -4,22 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>Settings</title>
     <script type="module" src="/main.js" defer></script>
   </head>
 
   <body>
     <header>
       <nav>
-        <a id="selected" href="index.html">Home</a>
-        <a href="settings.html">Settings</a>
+        <a href="index.html">Home</a>
+        <a id="selected" href="settings.html">Settings</a>
         <a href="logs.html">Logs</a>
       </nav>
     </header>
 
-    <div class="centered">
-      <p>Welcome to the Unreal Engine Toolkit!</p>
+    <div class="centered" id="project-directory">
+      <p>Unreal Engine location</p>
+      <input id="ue_directory_input" placeholder="Engine base folder" />
+      <button id="open_ue_directory_button" type="button">📂</button>
     </div>
+    <p id="greet-msg"></p>
 
     <!--<div class="container">
       <h1>Welcome to Tauri!</h1>

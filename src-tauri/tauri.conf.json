@@ -7,17 +7,22 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "unreal_toolkit",
-    "version": "0.0.0"
+    "productName": "Unreal Toolkit",
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "dialog": {
+        "all": true,
+        "open": true,
+        "save": true
+      }
     },
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "Copyright ©️ 2023 Jordon Brooks",
       "deb": {
         "depends": []
       },
@@ -29,7 +34,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.unreal.toolkit.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,10 +61,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 720,
         "resizable": true,
-        "title": "unreal_toolkit",
-        "width": 800
+        "title": "Unreal Toolkit",
+        "width": 1280
       }
     ]
   }

@@ -4,6 +4,7 @@
 )]
 
 use tauri::{Manager, Size, LogicalSize};
+use tauri::api::dialog;
 
 #[derive(Debug, Clone)]
 struct Window {
@@ -26,9 +27,14 @@ fn set_main_window(new_window: tauri::Window) {
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn greet(name: &str) -> String {
-    get_main_window().set_size(Size::Logical(LogicalSize { width: 640.0, height: 360.0 })).expect("error, ");
-    format!("Hello, {}! You've been greeted from Rust!", get_main_window().label())
+async fn open_ue_directory_dialog() -> String {
+    dialog::FileDialogBuilder::default()
+          .add_filter("Markdown", &["md"])
+          .pick_file(|path_buf| match path_buf {
+            Some(p) => {}
+            _ => {}
+          });
+          String::from("value")
 }
 
 fn main() {
@@ -36,11 +42,11 @@ fn main() {
         .setup(|app|{
             set_main_window(app.get_window("main").unwrap());
 
-            get_main_window().set_size(Size::Logical(LogicalSize { width: 1280.0, height: 720.0 })).expect("error, ");
-
+            get_main_window().set_size(Size::Logical(LogicalSize { width: 1280.0, height: 720.0 })).expect("Error setting window size!");
+            get_main_window().set_min_size(Some(LogicalSize { width: 640.0, height: 360.0 })).expect("Failed to set min size");
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![open_ue_directory_dialog])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
