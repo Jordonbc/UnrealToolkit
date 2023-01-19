@@ -3,8 +3,15 @@
     windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate lazy_static;
+
+use std::fs;
+
 use tauri::{Manager, Size, LogicalSize};
 use tauri::api::dialog;
+use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
 
 #[derive(Debug, Clone)]
 struct Window {
@@ -13,18 +20,78 @@ struct Window {
 
 static mut MAIN_WINDOW: Option<Window> = None;
 static mut UE_DIRECTORY_LOCATION: String = String::new();
+static mut CONFIG: Option<ConfigTemplate> = None;
 
-fn get_ue_directory() -> String {
+#[derive(Serialize, Deserialize, Clone)]
+struct ConfigTemplate {
+    ue_directory: String,
+}
+
+lazy_static! {
+    static ref CONFIG_MUTEX: Mutex<()> = Mutex::new(());
+}
+
+fn get_config() -> ConfigTemplate {
+    let _guard = CONFIG_MUTEX.lock().unwrap();
     unsafe {
-        return UE_DIRECTORY_LOCATION.clone();
+        return CONFIG.clone().unwrap();
+    }
+}
+
+fn set_config(new_setting: ConfigTemplate) {
+    let _guard = CONFIG_MUTEX.lock().unwrap();
+    unsafe {
+        CONFIG = Some(new_setting);
+    }
+}
+
+fn read_config_file() {
+    let config_result = fs::read_to_string("config.json");
+    match config_result {
+        Ok(_) => {
+            unsafe {
+                CONFIG = serde_json::from_str(config_result.unwrap().as_str()).expect("Error Sanitizing config file!");
+            }
+        },
+        Err(_) => (),
+    }
+
+}
+
+impl Default for ConfigTemplate {
+    fn default() -> ConfigTemplate {
+        let config_result = fs::read_to_string("config.json");
+        match config_result {
+            Ok(_) => {
+                let config_as_string: ConfigTemplate = serde_json::from_str(config_result.unwrap().as_str()).expect("Error Sanitizing config file!");
+            },
+            Err(_) => {
+                fs::File::create("config.json");
+
+            },
+        }
+
+
+        ConfigTemplate {
+            ue_directory: String::new(),
+        }
     }
 }
 
 #[tauri::command]
-fn set_ue_directory(new_directory: String) {
+fn get_ue_directory() -> String {
+    get_config().ue_directory;
+    print!("Returning: {}", get_config().ue_directory);
 
+    return get_config().ue_directory;
+}
+
+#[tauri::command]
+fn set_ue_directory(new_directory: String) {
     println!("Setting UE_DIRECTORY_LOCATION: {}", new_directory);
-    unsafe {UE_DIRECTORY_LOCATION = new_directory}
+    let mut config = get_config();
+    config.ue_directory = new_directory;
+    set_config(config);
 }
 
 fn get_main_window() -> tauri::Window {
@@ -56,15 +123,23 @@ async fn open_ue_directory_dialog() {
 }
 
 fn main() {
+    {
+        let config = ConfigTemplate { ue_directory: String::new()};
+        set_config(config);
+    }
+    
     tauri::Builder::default()
         .setup(|app|{
             set_main_window(app.get_window("main").unwrap());
 
             get_main_window().set_size(Size::Logical(LogicalSize { width: 1280.0, height: 720.0 })).expect("Error setting window size!");
             get_main_window().set_min_size(Some(LogicalSize { width: 640.0, height: 360.0 })).expect("Failed to set min size");
+
+            println!("ue directory: {}", get_config().ue_directory);
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![open_ue_directory_dialog, set_ue_directory])
+        .invoke_handler(tauri::generate_handler![open_ue_directory_dialog, set_ue_directory, get_ue_directory])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    
 }
