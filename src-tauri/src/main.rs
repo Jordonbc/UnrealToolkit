@@ -6,12 +6,13 @@
 #[macro_use]
 extern crate lazy_static;
 
-use std::fs;
-
+use std::path::PathBuf;
+use std::{fs, env};
 use tauri::{Manager, Size, LogicalSize};
-use tauri::api::dialog;
+use tauri::api::{dialog};
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
+use directories::ProjectDirs;
 
 #[derive(Debug, Clone)]
 struct Window {
@@ -28,6 +29,13 @@ struct ConfigTemplate {
 
 lazy_static! {
     static ref CONFIG_MUTEX: Mutex<()> = Mutex::new(());
+    static ref CONFIG_LOCATION: PathBuf = {
+        let dirs = ProjectDirs::from("dev", "", "unrealtoolkit");
+        match dirs {
+        Some(_) => return dirs.unwrap().config_dir().to_path_buf().join("config.json"),
+        None => todo!(),
+        }
+    };
 }
 
 fn get_config() -> ConfigTemplate {
@@ -38,43 +46,51 @@ fn get_config() -> ConfigTemplate {
 }
 
 fn set_config(new_setting: ConfigTemplate) {
-    let _guard = CONFIG_MUTEX.lock().unwrap();
     unsafe {
+        let _guard = CONFIG_MUTEX.lock().unwrap();
         CONFIG = Some(new_setting);
+    }
+    save_config_file();
+}
+
+fn reset_config() {
+    set_config(ConfigTemplate { ue_directory: String::new() });
+    fs::write(CONFIG_LOCATION.to_str().unwrap(), serde_json::to_string_pretty(&get_config()).unwrap()).expect("Error Creating file!");
+}
+
+fn try_create_config_folders() {
+    if !CONFIG_LOCATION.exists() {
+        let directory_tree = CONFIG_LOCATION.as_path().clone().parent().unwrap();
+
+        println!("Creating folder tree: {}", directory_tree.to_str().unwrap());
+        fs::create_dir_all(directory_tree).expect("failed to create folders");
     }
 }
 
 fn read_config_file() {
-    let config_result = fs::read_to_string("config.json");
+    println!("Reading config file: {}", CONFIG_LOCATION.to_str().unwrap());
+
+    try_create_config_folders();
+
+    let config_result = fs::read_to_string(CONFIG_LOCATION.to_str().unwrap());
     match config_result {
         Ok(_) => {
-            unsafe {
-                CONFIG = serde_json::from_str(config_result.unwrap().as_str()).expect("Error Sanitizing config file!");
+            let sanitized_config = serde_json::from_str(config_result.unwrap().as_str());
+            match sanitized_config {
+                Ok(_) => {
+                    set_config(sanitized_config.unwrap());
+                },
+                Err(_) => reset_config(),
             }
         },
-        Err(_) => (),
+        Err(_) => reset_config(),
     }
-
 }
 
-impl Default for ConfigTemplate {
-    fn default() -> ConfigTemplate {
-        let config_result = fs::read_to_string("config.json");
-        match config_result {
-            Ok(_) => {
-                let config_as_string: ConfigTemplate = serde_json::from_str(config_result.unwrap().as_str()).expect("Error Sanitizing config file!");
-            },
-            Err(_) => {
-                fs::File::create("config.json");
-
-            },
-        }
-
-
-        ConfigTemplate {
-            ue_directory: String::new(),
-        }
-    }
+fn save_config_file() {
+    println!("Saving config file: {}", CONFIG_LOCATION.to_str().unwrap());
+    try_create_config_folders();
+    fs::write(CONFIG_LOCATION.to_str().unwrap(), serde_json::to_string_pretty(&get_config()).unwrap()).expect("Error saving file!");
 }
 
 #[tauri::command]
@@ -123,8 +139,9 @@ async fn open_ue_directory_dialog() {
 
 fn main() {
     {
-        let config = ConfigTemplate { ue_directory: String::new()};
-        set_config(config);
+        read_config_file();
+        //let config = ConfigTemplate { ue_directory: String::new()};
+        //set_config(config);
     }
     
     tauri::Builder::default()
