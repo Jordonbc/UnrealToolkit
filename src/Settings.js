@@ -11,24 +11,27 @@ function openUEDirectory_Dialog() {
   //greetMsgEl.textContent = await invoke("nameOfRustFunctionHere", { paramNameHere: paramater});
 }
 
+async function reload_variables() {
+  let ue_directory = await invoke("get_ue_directory");
+    ue_directory_input_element.value = ue_directory
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   ue_directory_input_element = document.getElementById("ue_directory_input");
   ue_directory_input_button = document.getElementById("open_ue_directory_button");
 
-  listen("ue_directory_changed", function (s) {
-    console.log("Recieved: " + s.payload);
-    ue_directory_input_element.value = s.payload;
+  reload_variables();
+  
+
+  listen("ue_directory_changed", function (string) {
+    ue_directory_input_element.value = string.payload;
   });
   
   ue_directory_input_button.addEventListener("click", () => openUEDirectory_Dialog());
 
   ue_directory_input_element.addEventListener("keypress", function(event) {
-    // If the user presses the "Enter" key on the keyboard
-    if (event.key === "Enter") {
-      console.log("pressed enter");
-      // Cancel the default action, if needed
+    if (event.key === "Enter" && ue_directory_input_element.value.length > 0) {
       event.preventDefault();
-      // Trigger the button element with a click
       invoke("set_ue_directory", { newDirectory: ue_directory_input_element.value });
     }
   })
