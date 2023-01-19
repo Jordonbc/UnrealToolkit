@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
+    <script type="module" src="/home.js" defer></script>
   </head>
 
   <body>
@@ -16,8 +17,113 @@
       </nav>
     </header>
 
-    <div class="centered">
+    <div class="actually_centered">
       <p>Welcome to the Unreal Engine Toolkit!</p>
+      <div>
+        <input id="project_directory_input" placeholder="Project folder" />
+        <button id="open_project_directory_button" type="button">📂</button>
+      </div>
+
+      <div style="display: flex;">
+        <div id="Client">
+          <h2 class="dropdown_menu" onclick="toggleTable()">Client</h2>
+          <form id="client_configuration_dropdown" class="dropdown_box">
+            <script>
+              function toggleTable() {
+                var table = document.getElementById("client_configuration_dropdown");
+                if (table.style.display === "block") {
+                  table.style.display = "none";
+                } else {
+                  table.style.display = "block";
+                }
+              }
+            </script>
+            <div id="client_configuration">
+              <h3>Configuration</h3>
+              <table>
+                <tr>
+                  <td><input type="checkbox" id="client_win64" name="client_configuration" value="win64" checked>
+                  <label for="client_win64">win64</label></td>
+                  <td><input type="checkbox" id="client_linux" name="client_configuration" value="linux">
+                  <label for="client_linux">linux</label></td>
+                  <td><input type="checkbox" id="client_mac" name="client_configuration" value="mac" disabled>
+                  <label for="client_mac">mac</label></td>
+                </tr>
+              </table>
+            </div>
+
+            <div id="client_build">
+              <h3>Build</h3>
+              <table>
+                <tr>
+                  <td><input type="radio" id="client_shipping" name="client_build" value="shipping" checked/>
+                  <label for="client_shipping">Shipping</label></td>
+                  <td><input type="radio" id="client_test" name="client_build" value="test"/>
+                  <label for="client_test">Test</label></td>
+                  <td><input type="radio" id="client_development" name="client_build" value="development"/>
+                  <label for="client_development">Development</label></td>
+                </tr>
+              </table>
+            </div>
+
+            <div id="client_misc">
+              <h3>Misc</h3>
+              <table>
+                <tr>
+                  <td><input type="checkbox" id="client_no_crashreporter" name="client_build" value="no_crashreporter"/>
+                  <label for="client_no_crashreporter">Remove Crash Reporter (space saver)</label></td>
+                </tr>
+              </table>
+              <button id="package_client_button" type="button">Package Client</button>
+            </div>
+
+          </form>
+        </div>
+
+        <div id="Server">
+          <h2 class="dropdown_menu">Server</h2>
+            <div id="server_configuration">
+              <h3>Configuration</h3>
+              <table>
+                <tr>
+                  <td><input type="checkbox" id="server_win64" name="server_configuration" value="win64" checked>
+                  <label for="server_win64">win64</label></td>
+                  <td><input type="checkbox" id="server_linux" name="server_configuration" value="linux">
+                  <label for="server_linux">linux</label></td>
+                  <td><input type="checkbox" id="server_mac" name="server_configuration" value="mac" disabled>
+                  <label for="server_mac">mac</label></td>
+                </tr>
+              </table>
+            </div>
+
+            <div id="server_build">
+              <h3>Build</h3>
+              <table>
+                <tr>
+                  <td><input type="radio" id="server_shipping" name="server_build" value="shipping" checked/>
+                  <label for="server_shipping">Shipping</label></td>
+                  <td><input type="radio" id="server_test" name="server_build" value="test"/>
+                  <label for="server_test">Test</label></td>
+                  <td><input type="radio" id="server_development" name="server_build" value="development"/>
+                  <label for="server_development">Development</label></td>
+                </tr>
+              </table>
+            </div>
+
+            <div id="server_misc">
+              <h3>Misc</h3>
+              <table>
+                <tr>
+                  <td><input type="checkbox" id="server_no_crashreporter" name="server_build" value="no_crashreporter"/>
+                  <label for="server_no_crashreporter">Remove Crash Reporter (space saver)</label></td>
+                </tr>
+              </table>
+            </div>
+            <button id="package_server_button" type="button">Package Server</button>
+        </div>
+
+      </div>
+
     </div>
 
     <!--<div class="container">
