@@ -16,7 +16,7 @@
 
 a {
   font-weight: 500;
-  color: #ffffff;
+  color: #000000;
   text-decoration: inherit;
 }
 
@@ -52,11 +52,11 @@ nav #selected {
   text-align: center;
 }
 
-#Client, #Server{
+#Client, #Server {
   margin: 15px;
   padding: 10px;
   border-radius: 25px;
-  background-color:#3f3f3f;
+  background-color: #cccaca;
 }
 
 #project-directory
@@ -108,6 +108,10 @@ button {
     background-color: #2f2f2f;
   }
 
+  a {
+    color: #ffffff;
+  }
+
   a:hover {
     color: #24c8db;
   }
@@ -116,5 +120,9 @@ button {
   button {
     color: #ffffff;
     background-color: #0f0f0f98;
+  }
+
+  #Client, #Server {
+    background-color:#3f3f3f;
   }
 }
