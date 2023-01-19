@@ -19,7 +19,6 @@ struct Window {
 }
 
 static mut MAIN_WINDOW: Option<Window> = None;
-static mut UE_DIRECTORY_LOCATION: String = String::new();
 static mut CONFIG: Option<ConfigTemplate> = None;
 
 #[derive(Serialize, Deserialize, Clone)]
