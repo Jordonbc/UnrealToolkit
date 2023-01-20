@@ -68,7 +68,12 @@ h1 {
   text-align: center;
 }
 
-#project_directory_input {
+.warning {
+  color: blue;
+  font-size: small;
+}
+
+#project_directory_input, #output_directory_input{
   margin-right: 14px;
   margin-left: 14px;
   display: inline-block;
@@ -124,5 +129,9 @@ button {
 
   #Client, #Server {
     background-color:#3f3f3f;
+  }
+
+  .warning {
+    color: yellow;
   }
 }

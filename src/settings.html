@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings</title>
+    <script type="script" src="/global_variables.js"></script>
     <script type="module" src="/settings.js" defer></script>
   </head>
 
@@ -22,7 +23,7 @@
       <input id="ue_directory_input" placeholder="Engine base folder" />
       <button id="open_ue_directory_button" type="button">📂</button>
     </div>
-    <p id="greet-msg"></p>
+    <p id="is_source_warning" class="warning">Warning: The selected engine cannot build server configuration!</p>
 
     <!--<div class="container">
       <h1>Welcome to Tauri!</h1>

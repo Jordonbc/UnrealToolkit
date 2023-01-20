@@ -2,7 +2,6 @@ use std::fs;
 use crate::global_variables::{CONFIG, CONFIG_MUTEX, ConfigTemplate ,CONFIG_LOCATION};
 
 pub fn get_config() -> ConfigTemplate {
-    let _guard = CONFIG_MUTEX.lock().unwrap();
     unsafe {
         return CONFIG.clone().unwrap();
     }
@@ -10,14 +9,13 @@ pub fn get_config() -> ConfigTemplate {
 
 pub fn set_config(new_setting: ConfigTemplate) {
     unsafe {
-        let _guard = CONFIG_MUTEX.lock().unwrap();
         CONFIG = Some(new_setting);
     }
     save_config_file();
 }
 
 pub fn reset_config() {
-    set_config(ConfigTemplate { ue_directory: String::new() });
+    set_config(ConfigTemplate { ue_directory: String::new(), ue_source: false });
     fs::write(CONFIG_LOCATION.to_str().unwrap(), serde_json::to_string_pretty(&get_config()).unwrap()).expect("Error Creating file!");
 }
 

@@ -27,8 +27,8 @@ fn main() {
         .setup(|app|{
             set_main_window(app.get_window("main").unwrap());
 
-            get_main_window().set_size(Size::Logical(LogicalSize { width: 640.0, height: 610.0 })).expect("Error setting window size!");
-            get_main_window().set_min_size(Some(LogicalSize { width: 640.0, height: 610.0 })).expect("Failed to set min size");
+            get_main_window().set_size(Size::Logical(LogicalSize { width: 640.0, height: 660.0 })).expect("Error setting window size!");
+            get_main_window().set_min_size(Some(LogicalSize { width: 640.0, height: 660.0 })).expect("Failed to set min size");
 
             println!("ue directory: {}", get_config().ue_directory);
             Ok(())
@@ -39,7 +39,10 @@ fn main() {
             get_ue_directory, 
             open_project_directory_dialog,
             get_project_directory,
-            set_project_directory
+            set_project_directory,
+            set_compiled_output_directory,
+            get_compiled_output_directory,
+            get_is_source_directory
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -61,7 +61,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 610,
+        "height": 660,
         "resizable": true,
         "title": "Unreal Toolkit",
         "width": 640

@@ -11,10 +11,12 @@ pub struct Window {
 pub static mut MAIN_WINDOW: Option<Window> = None;
 pub static mut CONFIG: Option<ConfigTemplate> = None;
 pub static mut PROJECT_DIRECTORY: Option<String> = None;
+pub static mut COMPILED_OUTPUT_DIRECTORY: Option<String> = None;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigTemplate {
     pub ue_directory: String,
+    pub ue_source: bool
 }
 
 lazy_static! {

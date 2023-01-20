@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
+    <script type="script" src="/global_variables.js"></script>
     <script type="module" src="/home.js" defer></script>
   </head>
 
@@ -20,8 +21,15 @@
     <div class="actually_centered">
       <p>Welcome to the Unreal Engine Toolkit!</p>
       <div>
-        <input id="project_directory_input" placeholder="Project folder" />
+        <label for="project_directory_input">Project Directory: </label>
+        <input id="project_directory_input" name="project_directory_input" placeholder="Project folder" />
         <button id="open_project_directory_button" type="button">📂</button>
+      </div>
+
+      <div style="padding-top: 15px;">
+        <label for="output_directory_input">Output Directory: </label>
+        <input id="output_directory_input" name="output_directory_input" placeholder="Output folder" />
+        <button id="open_output_directory_button" type="button">📂</button>
       </div>
 
       <div style="display: flex;">
