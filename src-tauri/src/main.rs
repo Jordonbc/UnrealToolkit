@@ -9,19 +9,15 @@ extern crate lazy_static;
 use std::{env};
 use tauri::{Manager, Size, LogicalSize};
 
-use crate::global_variables::*;
-mod global_variables;
+use crate::globals::*;
+mod globals;
 use crate::tauri_commands::*;
 mod tauri_commands;
 use crate::config::*;
 mod config;
 
 fn main() {
-    {
-        read_config_file();
-        //let config = ConfigTemplate { ue_directory: String::new()};
-        //set_config(config);
-    }
+    read_config_file();
     
     tauri::Builder::default()
         .setup(|app|{

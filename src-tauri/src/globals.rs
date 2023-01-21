@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use tauri::Manager;
 use std::sync::Mutex;
 use std::path::PathBuf;
 use directories::ProjectDirs;
@@ -8,7 +9,8 @@ pub struct Window {
     pub window: tauri::Window
 }
 
-pub static mut MAIN_WINDOW: Option<Window> = None;
+pub static MAIN_WINDOW: Mutex<Option<Window>> = Mutex::new(None);
+//pub static mut MAIN_WINDOW: Option<Window> = None;
 pub static mut CONFIG: Option<ConfigTemplate> = None;
 pub static mut PROJECT_DIRECTORY: Option<String> = None;
 pub static mut COMPILED_OUTPUT_DIRECTORY: Option<String> = None;
@@ -31,13 +33,14 @@ lazy_static! {
 }
 
 pub fn get_main_window() -> tauri::Window {
-    unsafe {
-        let a = MAIN_WINDOW.clone().unwrap();
-        return a.window;
-    }
+    MAIN_WINDOW.lock().unwrap().clone().unwrap().window
 }
 
 pub fn set_main_window(new_window: tauri::Window) {
+    *MAIN_WINDOW.lock().unwrap() = Some(Window { window: new_window });
+}
 
-    unsafe {MAIN_WINDOW = Some(Window { window: new_window })}
+pub fn update_frontend() {
+    println!("Updating frontend!");
+    get_main_window().emit_all("update_frontend", true).expect("Error Sending directory changed event to frontend!");
 }

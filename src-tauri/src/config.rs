@@ -1,5 +1,5 @@
 use std::fs;
-use crate::global_variables::{CONFIG, ConfigTemplate ,CONFIG_LOCATION};
+use crate::globals::{CONFIG, ConfigTemplate ,CONFIG_LOCATION};
 
 pub fn get_config() -> ConfigTemplate {
     unsafe {

@@ -1,8 +1,7 @@
 use tauri::api::dialog;
-use tauri::Manager;
 
 use crate::config::{get_config, set_config};
-use crate::global_variables::{PROJECT_DIRECTORY, get_main_window, COMPILED_OUTPUT_DIRECTORY, CONFIG_MUTEX};
+use crate::globals::{PROJECT_DIRECTORY, get_main_window, COMPILED_OUTPUT_DIRECTORY, CONFIG_MUTEX, update_frontend};
 
 #[tauri::command]
 pub fn get_ue_directory() -> String {
@@ -18,6 +17,7 @@ pub fn set_ue_directory(new_directory: String) {
     let mut config = get_config();
     config.ue_directory = new_directory;
     set_config(config);
+    update_frontend();
 }
 
 #[tauri::command]
@@ -27,6 +27,7 @@ pub fn set_is_source_directory(is_source: bool) {
     let mut config = get_config();
     config.ue_source = is_source;
     set_config(config);
+    update_frontend();
 }
 
 #[tauri::command]
@@ -48,17 +49,17 @@ pub fn set_project_directory(new_directory: String) {
     unsafe {
         PROJECT_DIRECTORY = Some(new_directory);
     }
+    update_frontend();
 }
 
 #[tauri::command]
-pub async fn open_project_directory_dialog() {
+pub fn open_project_directory_dialog() {
     dialog::FileDialogBuilder::default()
           .add_filter("Unreal Engine Project File", &["uproject"])
           .pick_file(|path_buf| 
             match path_buf {
                 Some(path_buf) => {
                     set_project_directory(path_buf.to_str().unwrap().to_string());
-                    get_main_window().emit_all("update_frontend", true).expect("Error Sending directory changed event to frontend!");
                 },
                 None => ()
             }
@@ -67,7 +68,7 @@ pub async fn open_project_directory_dialog() {
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-pub async fn open_ue_directory_dialog() {
+pub fn open_ue_directory_dialog() {
     dialog::FileDialogBuilder::default()
           .pick_folder(|path_buf| 
             match path_buf {
@@ -75,8 +76,6 @@ pub async fn open_ue_directory_dialog() {
                     if path_buf.join("Engine/Build/BatchFiles/RunUAT.bat").is_file() {
                         set_ue_directory(path_buf.to_str().unwrap().to_string());
                         set_is_source_directory(!path_buf.join("Engine/Build/InstalledBuild.txt").is_file());
-
-                        get_main_window().emit_all("ue_directory_changed", get_ue_directory()).expect("Error Sending directory changed event to frontend!");
                     }
                     else {
                         dialog::message(Some(&get_main_window()), "Error", "The selected directory does not appear to be an Unreal Engine install!\n\nCanceling.");
@@ -89,11 +88,26 @@ pub async fn open_ue_directory_dialog() {
 }
 
 #[tauri::command]
-pub fn set_compiled_output_directory(new_directory: String) {
+pub fn open_output_directory_dialog() {
+    dialog::FileDialogBuilder::default()
+          .pick_folder(|path_buf| 
+            match path_buf {
+                Some(path_buf) => {
+                    set_compiled_output_directory(path_buf.to_str().unwrap());
+                    
+                },
+                None => {}
+            }
+        );
+}
+
+#[tauri::command]
+pub fn set_compiled_output_directory(new_directory: &str) {
     println!("Setting COMPILED_OUTPUT_DIRECTORY: {}", new_directory);
     unsafe {
-        COMPILED_OUTPUT_DIRECTORY = Some(new_directory);
+        COMPILED_OUTPUT_DIRECTORY = Some(new_directory.to_string());
     }
+    update_frontend();
 }
 
 #[tauri::command]
