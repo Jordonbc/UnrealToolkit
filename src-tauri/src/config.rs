@@ -2,15 +2,11 @@ use std::fs;
 use crate::globals::{CONFIG, ConfigTemplate ,CONFIG_LOCATION};
 
 pub fn get_config() -> ConfigTemplate {
-    unsafe {
-        return CONFIG.clone().unwrap();
-    }
+    return CONFIG.lock().unwrap().clone().unwrap();
 }
 
 pub fn set_config(new_setting: ConfigTemplate) {
-    unsafe {
-        CONFIG = Some(new_setting);
-    }
+    *CONFIG.lock().unwrap() = Some(new_setting);
     save_config_file();
 }
 

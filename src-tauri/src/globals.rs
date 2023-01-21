@@ -10,10 +10,9 @@ pub struct Window {
 }
 
 pub static MAIN_WINDOW: Mutex<Option<Window>> = Mutex::new(None);
-//pub static mut MAIN_WINDOW: Option<Window> = None;
-pub static mut CONFIG: Option<ConfigTemplate> = None;
-pub static mut PROJECT_DIRECTORY: Option<String> = None;
-pub static mut COMPILED_OUTPUT_DIRECTORY: Option<String> = None;
+pub static CONFIG: Mutex<Option<ConfigTemplate>> = Mutex::new(None);
+pub static PROJECT_DIRECTORY: Mutex<Option<String>> = Mutex::new(None);
+pub static COMPILED_OUTPUT_DIRECTORY: Mutex<Option<String>> = Mutex::new(None);
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ConfigTemplate {
@@ -22,7 +21,6 @@ pub struct ConfigTemplate {
 }
 
 lazy_static! {
-    pub static ref CONFIG_MUTEX: Mutex<()> = Mutex::new(());
     pub static ref CONFIG_LOCATION: PathBuf = {
         let dirs = ProjectDirs::from("dev", "", "unrealtoolkit");
         match dirs {

@@ -1,32 +1,33 @@
 use tauri::api::dialog;
 
 use crate::config::{get_config, set_config};
-use crate::globals::{PROJECT_DIRECTORY, get_main_window, COMPILED_OUTPUT_DIRECTORY, CONFIG_MUTEX, update_frontend};
+use crate::globals::{PROJECT_DIRECTORY, get_main_window, COMPILED_OUTPUT_DIRECTORY, update_frontend};
 
 #[tauri::command]
 pub fn get_ue_directory() -> String {
     print!("Returning: {}", get_config().ue_directory);
-
     return get_config().ue_directory;
 }
 
 #[tauri::command]
 pub fn set_ue_directory(new_directory: String) {
-    let _guard = CONFIG_MUTEX.lock().unwrap();
     println!("Setting UE_DIRECTORY_LOCATION: {}", new_directory);
+
     let mut config = get_config();
     config.ue_directory = new_directory;
     set_config(config);
+
     update_frontend();
 }
 
 #[tauri::command]
 pub fn set_is_source_directory(is_source: bool) {
-    let _guard = CONFIG_MUTEX.lock().unwrap();
     println!("Setting ue_source: {}", is_source.to_string());
+
     let mut config = get_config();
     config.ue_source = is_source;
     set_config(config);
+
     update_frontend();
 }
 
@@ -37,18 +38,14 @@ pub fn get_is_source_directory() -> bool {
 
 #[tauri::command]
 pub fn get_project_directory() -> String {
-    unsafe {
-        let p = PROJECT_DIRECTORY.clone().unwrap_or(String::new());
-        return p;
-    }
+    return PROJECT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new());
 }
 
 #[tauri::command]
 pub fn set_project_directory(new_directory: String) {
     println!("Setting PROJECT_DIRECTORY: {}", new_directory);
-    unsafe {
-        PROJECT_DIRECTORY = Some(new_directory);
-    }
+
+    *PROJECT_DIRECTORY.lock().unwrap() = Some(new_directory);
     update_frontend();
 }
 
@@ -94,7 +91,6 @@ pub fn open_output_directory_dialog() {
             match path_buf {
                 Some(path_buf) => {
                     set_compiled_output_directory(path_buf.to_str().unwrap());
-                    
                 },
                 None => {}
             }
@@ -104,15 +100,11 @@ pub fn open_output_directory_dialog() {
 #[tauri::command]
 pub fn set_compiled_output_directory(new_directory: &str) {
     println!("Setting COMPILED_OUTPUT_DIRECTORY: {}", new_directory);
-    unsafe {
-        COMPILED_OUTPUT_DIRECTORY = Some(new_directory.to_string());
-    }
+    *COMPILED_OUTPUT_DIRECTORY.lock().unwrap() = Some(new_directory.to_string());
     update_frontend();
 }
 
 #[tauri::command]
 pub fn get_compiled_output_directory() -> String {
-    unsafe {
-        COMPILED_OUTPUT_DIRECTORY.clone().unwrap()
-    }
+    COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap()
 }
