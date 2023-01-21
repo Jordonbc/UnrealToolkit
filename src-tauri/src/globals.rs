@@ -31,7 +31,7 @@ lazy_static! {
 }
 
 pub fn get_main_window() -> tauri::Window {
-    MAIN_WINDOW.lock().unwrap().clone().unwrap().window
+    MAIN_WINDOW.lock().unwrap().clone().expect("Error: MAIN_WINDOW is not set!").window
 }
 
 pub fn set_main_window(new_window: tauri::Window) {
