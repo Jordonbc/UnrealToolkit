@@ -38,7 +38,12 @@ fn main() {
             set_project_directory,
             set_compiled_output_directory,
             get_compiled_output_directory,
-            get_is_source_directory
+            get_is_source_directory,
+            open_output_directory_dialog,
+            set_client_configuration,
+            get_client_configuration,
+            set_server_configuration,
+            get_server_configuration
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

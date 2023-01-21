@@ -1,7 +1,14 @@
 use tauri::api::dialog;
 
 use crate::config::{get_config, set_config};
-use crate::globals::{PROJECT_DIRECTORY, get_main_window, COMPILED_OUTPUT_DIRECTORY, update_frontend};
+use crate::globals::{PROJECT_DIRECTORY,
+    get_main_window,
+    COMPILED_OUTPUT_DIRECTORY,
+    update_frontend,
+    Configuration,
+    CLIENT_CONFIGURATION,
+    SERVER_CONFIGURATION
+};
 
 #[tauri::command]
 pub fn get_ue_directory() -> String {
@@ -107,4 +114,26 @@ pub fn set_compiled_output_directory(new_directory: &str) {
 #[tauri::command]
 pub fn get_compiled_output_directory() -> String {
     COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap()
+}
+
+#[tauri::command]
+pub fn set_client_configuration(new_client_config: Configuration) {
+    *CLIENT_CONFIGURATION.lock().unwrap() = new_client_config;
+    update_frontend();
+}
+
+#[tauri::command]
+pub fn get_client_configuration() -> Configuration {
+    CLIENT_CONFIGURATION.lock().unwrap().clone()
+}
+
+#[tauri::command]
+pub fn set_server_configuration(new_server_config: Configuration) {
+    *SERVER_CONFIGURATION.lock().unwrap() = new_server_config;
+    update_frontend();
+}
+
+#[tauri::command]
+pub fn get_server_configuration() -> Configuration {
+    SERVER_CONFIGURATION.lock().unwrap().clone()
 }

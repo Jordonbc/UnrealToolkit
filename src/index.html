@@ -34,18 +34,7 @@
 
       <div style="display: flex;">
         <div id="Client">
-          <h2 class="dropdown_menu" onclick="toggleTable()">Client</h2>
-          <form id="client_configuration_dropdown" class="dropdown_box">
-            <script>
-              function toggleTable() {
-                var table = document.getElementById("client_configuration_dropdown");
-                if (table.style.display === "block") {
-                  table.style.display = "none";
-                } else {
-                  table.style.display = "block";
-                }
-              }
-            </script>
+          <h2 class="dropdown_menu">Client</h2>
             <div id="client_configuration">
               <h3>Configuration</h3>
               <table>
@@ -64,11 +53,11 @@
               <h3>Build</h3>
               <table>
                 <tr>
-                  <td><input type="radio" id="client_shipping" name="client_build" value="shipping" checked/>
+                  <td><input type="radio" id="client_shipping" name="client_build" value="Shipping" checked/>
                   <label for="client_shipping">Shipping</label></td>
-                  <td><input type="radio" id="client_test" name="client_build" value="test"/>
+                  <td><input type="radio" id="client_test" name="client_build" value="Test"/>
                   <label for="client_test">Test</label></td>
-                  <td><input type="radio" id="client_development" name="client_build" value="development"/>
+                  <td><input type="radio" id="client_development" name="client_build" value="Development"/>
                   <label for="client_development">Development</label></td>
                 </tr>
               </table>
@@ -84,8 +73,6 @@
               </table>
               <button id="package_client_button" type="button">Package Client</button>
             </div>
-
-          </form>
         </div>
 
         <div id="Server">
@@ -108,11 +95,11 @@
               <h3>Build</h3>
               <table>
                 <tr>
-                  <td><input type="radio" id="server_shipping" name="server_build" value="shipping" checked/>
+                  <td><input type="radio" id="server_shipping" name="server_build" value="Shipping" checked/>
                   <label for="server_shipping">Shipping</label></td>
-                  <td><input type="radio" id="server_test" name="server_build" value="test"/>
+                  <td><input type="radio" id="server_test" name="server_build" value="Test"/>
                   <label for="server_test">Test</label></td>
-                  <td><input type="radio" id="server_development" name="server_build" value="development"/>
+                  <td><input type="radio" id="server_development" name="server_build" value="Development"/>
                   <label for="server_development">Development</label></td>
                 </tr>
               </table>
