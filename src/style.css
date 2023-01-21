@@ -59,9 +59,17 @@ nav #selected {
   background-color: #cccaca;
 }
 
+#Server {
+  display: none;
+}
+
 #project-directory
 {
   padding-top: 1em;
+}
+
+#is_source_warning {
+  display: none;
 }
 
 h1 {
