@@ -6,7 +6,11 @@
 #[macro_use]
 extern crate lazy_static;
 
+use std::io::{BufReader, BufRead};
+use std::process::{Command, Stdio};
+use std::sync::Mutex;
 use std::{env};
+use std::path::Path;
 use tauri::{Manager, Size, LogicalSize};
 
 use crate::globals::*;
@@ -15,6 +19,39 @@ use crate::tauri_commands::*;
 mod tauri_commands;
 use crate::config::*;
 mod config;
+
+fn run_uat(config: Configuration) {
+    println!("Running: {}", Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat").to_str().unwrap());
+
+    //let mut logs: Vec<String> = Vec::new();
+    
+    for item in config.configuration {
+        RUNNING_JOBS.lock().unwrap().push(std::thread::spawn(move ||
+        {
+            *CLIENT_PACKAGING_STATUS.lock().unwrap() = JobStatus::Running;
+            update_frontend();
+
+            let mut foo = Command::new(Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat"))
+            .args(["BuildCookRun",
+            &format!("-project={}", &get_project_directory()),
+            &format!("-targetplatform={}", item),
+            "-pak",
+            "-unattended",
+            "-prereqs",
+            "-cook",
+            "-stage",
+            "-build",
+            "-package",
+            &format!("-configuration={}", config.build),
+            "-archive"
+            ])
+            .status().unwrap();
+
+            *CLIENT_PACKAGING_STATUS.lock().unwrap() = JobStatus::Stopped;
+            update_frontend();
+        }));
+    }
+}
 
 fn main() {
     read_config_file();
@@ -43,7 +80,11 @@ fn main() {
             set_client_configuration,
             get_client_configuration,
             set_server_configuration,
-            get_server_configuration
+            get_server_configuration,
+            package_client,
+            package_server,
+            get_client_packaging_status,
+            get_server_packaging_status
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

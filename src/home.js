@@ -13,9 +13,17 @@ function update_ui_elements() {
   }
 
   if (GLOBALS.client_section !== null) {
-    GLOBALS.client_win64_element.checked = GLOBALS.client_configuration.configuration.win64;
-    GLOBALS.client_linux_element.checked = GLOBALS.client_configuration.configuration.linux;
-    GLOBALS.client_mac_element.checked = GLOBALS.client_configuration.configuration.mac;
+    if (GLOBALS.client_configuration.configuration.includes("win64")) {
+      GLOBALS.client_win64_element.checked = true;
+    }
+
+    if (GLOBALS.client_configuration.configuration.includes("linux")) {
+      GLOBALS.client_linux_element.checked = true;
+    }
+
+    if (GLOBALS.client_configuration.configuration.includes("mac")) {
+      GLOBALS.client_mac_element.checked = true;
+    }
 
     switch (GLOBALS.client_configuration.build) {
       case "Shipping":
@@ -55,6 +63,16 @@ function update_ui_elements() {
 
     GLOBALS.server_no_crash_reporter_element.checked = GLOBALS.server_configuration.remove_crash_reporter;
   }
+
+  if (GLOBALS.packaging_client === "Running")
+  {
+    package_client_button.style.background = "darkgreen";
+    package_client_button.textContent = "⏳Packaging";
+  }
+  else {
+    package_client_button.style.background = "#0f0f0f98";
+    package_client_button.textContent = "Package Client";
+  }
 }
 
 function update_backend_client() {
@@ -70,12 +88,18 @@ function update_backend_client() {
     }
   }
 
+  const selected_client_configurations = [];
+  radios = document.getElementsByName('client_configuration');
+  for (var i = 0, length = radios.length; i < length; i++) {
+    if (radios[i].checked) {
+      // do whatever you want with the checked radio
+      selected_client_configurations.push(radios[i].value);
+      console.log("adding: ", radios[i].value);
+    }
+  }
+
   let config = {
-      configuration: {
-        win64: GLOBALS.client_win64_element.checked,
-        linux: GLOBALS.client_linux_element.checked,
-        mac: GLOBALS.client_mac_element.checked
-      },
+      configuration: selected_client_configurations,
       build: selected_client_build,
       remove_crash_reporter: GLOBALS.client_no_crash_reporter_element.checked
     };

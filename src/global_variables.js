@@ -42,6 +42,8 @@ export let project_directory
 export let is_source;
 export let client_configuration;
 export let server_configuration;
+export let packaging_client;
+export let packaging_server;
 
 const reload_ui_event = new Event('reload_ui');
 
@@ -52,6 +54,11 @@ async function reload_variables() {
     is_source = await invoke("get_is_source_directory");
     client_configuration = await invoke("get_client_configuration");
     server_configuration = await invoke("get_server_configuration");
+    packaging_client = await invoke("get_client_packaging_status");
+    packaging_server = await invoke("get_server_packaging_status");
+
+    console.log(packaging_client);
+    console.log(packaging_server);
 
     document.dispatchEvent(reload_ui_event);
   }
@@ -118,10 +125,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-export function package_client() {
-    console.log("Packaging client");
+export async function package_client() {
+    let result = await invoke("package_client");
 }
 
-export function package_server() {
-    console.log("Packaging server");
+export async function package_server() {
+    let result = invoke("package_server");
 }

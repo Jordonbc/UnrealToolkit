@@ -7,8 +7,11 @@ use crate::globals::{PROJECT_DIRECTORY,
     update_frontend,
     Configuration,
     CLIENT_CONFIGURATION,
-    SERVER_CONFIGURATION
+    SERVER_CONFIGURATION,
+    CLIENT_PACKAGING_STATUS,
+    SERVER_PACKAGING_STATUS, JobStatus
 };
+use crate::run_uat;
 
 #[tauri::command]
 pub fn get_ue_directory() -> String {
@@ -136,4 +139,26 @@ pub fn set_server_configuration(new_server_config: Configuration) {
 #[tauri::command]
 pub fn get_server_configuration() -> Configuration {
     SERVER_CONFIGURATION.lock().unwrap().clone()
+}
+
+#[tauri::command]
+pub fn package_client() {
+    println!("Packaging Client!");
+    run_uat(get_client_configuration());
+}
+
+#[tauri::command]
+pub fn package_server() {
+    println!("Packaging Server!");
+    run_uat(get_server_configuration());
+}
+
+#[tauri::command]
+pub fn get_client_packaging_status() -> JobStatus {
+    CLIENT_PACKAGING_STATUS.lock().unwrap().clone()
+}
+
+#[tauri::command]
+pub fn get_server_packaging_status() -> JobStatus {
+    SERVER_PACKAGING_STATUS.lock().unwrap().clone()
 }
