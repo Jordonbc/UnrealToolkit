@@ -1,6 +1,6 @@
 [package]
 name = "unreal_toolkit"
-version = "1.0.0"
+version = "1.0.1"
 description = "An all-in-one toolkit for unreal engine"
 authors = ["Jordon Brooks"]
 license = "GPL-3.0-or-later"
