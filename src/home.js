@@ -43,9 +43,17 @@ function update_ui_elements() {
   }
 
   if (GLOBALS.server_section !== null) {
-    GLOBALS.server_win64_element.checked = GLOBALS.server_configuration.configuration.win64;
-    GLOBALS.server_linux_element.checked = GLOBALS.server_configuration.configuration.linux;
-    GLOBALS.server_mac_element.checked = GLOBALS.server_configuration.configuration.mac;
+    if (GLOBALS.server_configuration.configuration.includes("win64")) {
+      GLOBALS.server_win64_element.checked = true;
+    }
+
+    if (GLOBALS.server_configuration.configuration.includes("linux")) {
+      GLOBALS.server_linux_element.checked = true;
+    }
+
+    if (GLOBALS.server_configuration.configuration.includes("mac")) {
+      GLOBALS.server_mac_element.checked = true;
+    }
 
     switch (GLOBALS.server_configuration.build) {
       case "Shipping":
@@ -94,14 +102,14 @@ function update_backend_client() {
     if (radios[i].checked) {
       // do whatever you want with the checked radio
       selected_client_configurations.push(radios[i].value);
-      console.log("adding: ", radios[i].value);
     }
   }
 
   let config = {
       configuration: selected_client_configurations,
       build: selected_client_build,
-      remove_crash_reporter: GLOBALS.client_no_crash_reporter_element.checked
+      remove_crash_reporter: GLOBALS.client_no_crash_reporter_element.checked,
+      is_server: false,
     };
 
   GLOBALS.invoke("set_client_configuration", { newClientConfig: config });
@@ -120,14 +128,21 @@ function update_backend_server() {
     }
   }
 
+  const selected_server_configurations = [];
+  radios = document.getElementsByName('server_configuration');
+  for (var i = 0, length = radios.length; i < length; i++) {
+    if (radios[i].checked) {
+      // do whatever you want with the checked radio
+      selected_server_configurations.push(radios[i].value);
+    }
+  }
+
+
   let config = {
-      configuration: {
-        win64: GLOBALS.server_win64_element.checked,
-        linux: GLOBALS.server_linux_element.checked,
-        mac: GLOBALS.server_mac_element.checked
-      },
+      configuration: selected_server_configurations,
       build: selected_server_build,
-      remove_crash_reporter: GLOBALS.server_no_crash_reporter_element.checked
+      remove_crash_reporter: GLOBALS.server_no_crash_reporter_element.checked,
+      is_server: true,
     };
 
   GLOBALS.invoke("set_server_configuration", { newServerConfig: config });
