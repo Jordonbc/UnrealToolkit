@@ -15,7 +15,7 @@ appenders:
     policy:
       trigger:
         kind: size
-        limit: 50kb
+        limit: 1mb
       roller:
         kind: delete
     encoder:
@@ -31,12 +31,12 @@ appenders:
     policy:
       trigger:
         kind: size
-        limit: 50kb
+        limit: 99kb
       roller:
         kind: fixed_window
         base: 1
         count: 10
-        pattern: "log/log{}.log"
+        pattern: "logs/log{}.log"
 root:
   level: trace
   appenders:
