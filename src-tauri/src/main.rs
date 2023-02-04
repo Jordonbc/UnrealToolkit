@@ -134,20 +134,35 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            open_ue_directory_dialog, 
+            // Dialog Boxes
+            open_ue_directory_dialog,
+            open_project_directory_dialog,
+            open_output_directory_dialog,
+
+            // ue_directory
             set_ue_directory, 
             get_ue_directory, 
-            open_project_directory_dialog,
+            
+            // project_directory
             get_project_directory,
             set_project_directory,
+
+            // output_directory
             set_compiled_output_directory,
             get_compiled_output_directory,
+
+            // is engine source
             get_is_source_directory,
-            open_output_directory_dialog,
+            
+            // client_configuration
             set_client_configuration,
             get_client_configuration,
+
+            // server_configuration
             set_server_configuration,
             get_server_configuration,
+
+            // packaging & packaging status
             package_client,
             package_server,
             get_client_packaging_status,
