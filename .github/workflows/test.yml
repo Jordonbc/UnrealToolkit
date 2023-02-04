@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - stable
   pull_request:
 
 jobs:
@@ -50,7 +51,7 @@ jobs:
           # `$workspace -> $target`. The `$target` part is treated as a directory
           # relative to the `$workspace` and defaults to "target" if not explicitly given.
           # default: ". -> target"
-          workspaces: "src-tauri"
+          workspaces: "./src-tauri -> target"
           
       - name: install app dependencies and build it
         run: cargo install tauri-cli && cargo tauri build
