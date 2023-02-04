@@ -1,4 +1,4 @@
-use log::{debug, trace, error, info};
+use log::{trace, error, info};
 use serde::{Deserialize, Serialize};
 use shared_child::SharedChild;
 use tauri::Manager;
