@@ -1,4 +1,4 @@
-use log::trace;
+use log::{trace, info};
 use tauri::api::dialog;
 
 use crate::config::{get_config, set_config};
@@ -124,29 +124,38 @@ pub fn set_compiled_output_directory(new_directory: &str) {
 
 #[tauri::command]
 pub fn get_compiled_output_directory() -> String {
-    COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new())
+    let output_directory = COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new());
+    trace!("COMPILED_OUTPUT_DIRECTORY: {}", serde_json::to_string_pretty(&output_directory).unwrap().to_string());
+    return output_directory;
 }
 
 #[tauri::command]
 pub fn set_client_configuration(new_client_config: Configuration) {
+    info!("New client config: {}", serde_json::to_string_pretty(&new_client_config).unwrap().to_string());
     *CLIENT_CONFIGURATION.lock().unwrap() = new_client_config;
     update_frontend();
 }
 
 #[tauri::command]
 pub fn get_client_configuration() -> Configuration {
-    CLIENT_CONFIGURATION.lock().unwrap().clone()
+    let returned_client_configuration = CLIENT_CONFIGURATION.lock().unwrap().clone();
+    trace!("CLIENT_CONFIGURATION: {}", serde_json::to_string_pretty(&returned_client_configuration).unwrap().to_string());
+    return returned_client_configuration;
+    
 }
 
 #[tauri::command]
 pub fn set_server_configuration(new_server_config: Configuration) {
+    info!("New server config: {}", serde_json::to_string_pretty(&new_server_config).unwrap().to_string());
     *SERVER_CONFIGURATION.lock().unwrap() = new_server_config;
     update_frontend();
 }
 
 #[tauri::command]
 pub fn get_server_configuration() -> Configuration {
-    SERVER_CONFIGURATION.lock().unwrap().clone()
+    let returned_server_configuration = SERVER_CONFIGURATION.lock().unwrap().clone();
+    trace!("SERVER_CONFIGURATION: {}", serde_json::to_string_pretty(&returned_server_configuration).unwrap().to_string());
+    return returned_server_configuration;
 }
 
 #[tauri::command]
