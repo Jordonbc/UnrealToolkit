@@ -1,3 +1,4 @@
+use log::trace;
 use tauri::api::dialog;
 
 use crate::config::{get_config, set_config};
@@ -8,20 +9,23 @@ use crate::globals::{PROJECT_DIRECTORY,
     Configuration,
     CLIENT_CONFIGURATION,
     SERVER_CONFIGURATION,
-    CLIENT_PACKAGING_STATUS,
-    SERVER_PACKAGING_STATUS, JobStatus
+    SERVER_PACKAGING_STATUS,
+    JobStatus,
+    QUEUE,
+    QueueElement,
+    PACKAGING_STATUS
 };
-use crate::run_uat;
+use crate::{run_queue, generate_package_command, stop_queue};
 
 #[tauri::command]
 pub fn get_ue_directory() -> String {
-    print!("Returning: {}", get_config().ue_directory);
+    trace!("Returning: {}", get_config().ue_directory);
     return get_config().ue_directory;
 }
 
 #[tauri::command]
 pub fn set_ue_directory(new_directory: String) {
-    println!("Setting UE_DIRECTORY_LOCATION: {}", new_directory);
+    trace!("Setting UE_DIRECTORY_LOCATION: {}", new_directory);
 
     let mut config = get_config();
     config.ue_directory = new_directory;
@@ -32,7 +36,7 @@ pub fn set_ue_directory(new_directory: String) {
 
 #[tauri::command]
 pub fn set_is_source_directory(is_source: bool) {
-    println!("Setting ue_source: {}", is_source.to_string());
+    trace!("Setting ue_source: {}", is_source.to_string());
 
     let mut config = get_config();
     config.ue_source = is_source;
@@ -43,17 +47,21 @@ pub fn set_is_source_directory(is_source: bool) {
 
 #[tauri::command]
 pub fn get_is_source_directory() -> bool {
-    return get_config().ue_source;
+    let b = get_config().ue_source;
+    trace!("get_is_source: {}", b);
+    return b;
 }
 
 #[tauri::command]
 pub fn get_project_directory() -> String {
-    return PROJECT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new());
+    let project_directory = PROJECT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new());
+    trace!("project_directory: {}", project_directory);
+    return project_directory;
 }
 
 #[tauri::command]
 pub fn set_project_directory(new_directory: String) {
-    println!("Setting PROJECT_DIRECTORY: {}", new_directory);
+    trace!("Setting PROJECT_DIRECTORY: {}", new_directory);
 
     *PROJECT_DIRECTORY.lock().unwrap() = Some(new_directory);
     update_frontend();
@@ -109,14 +117,14 @@ pub fn open_output_directory_dialog() {
 
 #[tauri::command]
 pub fn set_compiled_output_directory(new_directory: &str) {
-    println!("Setting COMPILED_OUTPUT_DIRECTORY: {}", new_directory);
+    trace!("Setting COMPILED_OUTPUT_DIRECTORY: {}", new_directory);
     *COMPILED_OUTPUT_DIRECTORY.lock().unwrap() = Some(new_directory.to_string());
     update_frontend();
 }
 
 #[tauri::command]
 pub fn get_compiled_output_directory() -> String {
-    COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap()
+    COMPILED_OUTPUT_DIRECTORY.lock().unwrap().clone().unwrap_or(String::new())
 }
 
 #[tauri::command]
@@ -143,19 +151,48 @@ pub fn get_server_configuration() -> Configuration {
 
 #[tauri::command]
 pub fn package_client() {
-    println!("Packaging Client!");
-    run_uat(get_client_configuration());
+    trace!("package client pressed");
+    let a = get_client_packaging_status();
+    trace!("Status: {}", a);
+    if a == JobStatus::Running
+    {
+        trace!("Stopping Queue!");
+        stop_queue();
+    }
+    else {
+        trace!("Packaging Client!");
+        for build in &get_client_configuration().configuration {
+            trace!("Building Queue");
+            let (command, args) = generate_package_command(build.to_string(), get_client_configuration().build.to_string());
+            let a = QueueElement { job_status: JobStatus::Waiting, command: command, args: args};
+            trace!("Pushing value to queue");
+            unsafe {QUEUE.push(a)};
+            trace!("Done");
+        }
+
+        for el in unsafe {QUEUE.iter()} {
+            println!("{}", serde_json::to_string_pretty(el).unwrap());
+        }
+
+        run_queue();
+    }
+    
 }
 
 #[tauri::command]
 pub fn package_server() {
-    println!("Packaging Server!");
-    run_uat(get_server_configuration());
+    trace!("Packaging Server!");
+    for build in &get_server_configuration().configuration {
+        let (command, args) = generate_package_command(get_client_configuration().build.to_string(), build.to_string());
+        let a = QueueElement { job_status: JobStatus::Waiting, command: command, args: args};
+        unsafe {QUEUE.push(a)};
+    }
+    run_queue();
 }
 
 #[tauri::command]
 pub fn get_client_packaging_status() -> JobStatus {
-    CLIENT_PACKAGING_STATUS.lock().unwrap().clone()
+    unsafe {PACKAGING_STATUS}
 }
 
 #[tauri::command]

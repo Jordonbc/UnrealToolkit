@@ -6,11 +6,16 @@
 #[macro_use]
 extern crate lazy_static;
 
-use std::io::{BufReader, BufRead};
-use std::process::{Command, Stdio};
-use std::sync::Mutex;
-use std::{env};
+use log::debug;
+use log::error;
+use log::info;
+use log::trace;
+use log4rs;
+
 use std::path::Path;
+use std::process::Command;
+use std::env;
+use shared_child::SharedChild;
 use tauri::{Manager, Size, LogicalSize};
 
 use crate::globals::*;
@@ -20,40 +25,102 @@ mod tauri_commands;
 use crate::config::*;
 mod config;
 
-fn run_uat(config: Configuration) {
-    println!("Running: {}", Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat").to_str().unwrap());
-
-    //let mut logs: Vec<String> = Vec::new();
-    
-    for item in config.configuration {
-        RUNNING_JOBS.lock().unwrap().push(std::thread::spawn(move ||
-        {
-            *CLIENT_PACKAGING_STATUS.lock().unwrap() = JobStatus::Running;
-            update_frontend();
-
-            let mut foo = Command::new(Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat"))
-            .args(["BuildCookRun",
-            &format!("-project={}", &get_project_directory()),
-            &format!("-targetplatform={}", item),
-            "-pak",
-            "-unattended",
-            "-prereqs",
-            "-cook",
-            "-stage",
-            "-build",
-            "-package",
-            &format!("-configuration={}", config.build),
-            "-archive"
-            ])
-            .status().unwrap();
-
-            *CLIENT_PACKAGING_STATUS.lock().unwrap() = JobStatus::Stopped;
-            update_frontend();
-        }));
+fn kill_process_tree(pid: u32) {
+    if cfg!(target_os = "windows") {
+        info!("Killing via taskkill...");
+        Command::new("taskkill")
+            .args(["/pid", &pid.to_string(), "/T", "/F"])
+            .output()
+            .expect("Failed to kill process tree");
+    } else {
+        info!("Killing via pkill...");
+        Command::new("pkill")
+            .arg("-P")
+            .arg(pid.to_string())
+            .output()
+            .expect("Failed to kill process tree");
     }
 }
 
+fn stop_queue() {
+    info!("Stopping thread");
+    std::thread::spawn(||
+        {
+        let thread = unsafe {&PACKAGING_THREAD};
+        match thread.as_ref() {
+            Some(_) => {
+                info!("Killing: {}", thread.as_ref().unwrap().id());
+                kill_process_tree(thread.as_ref().unwrap().id());
+                
+                unsafe {PACKAGING_THREAD = None};
+
+                unsafe {PACKAGING_STATUS = JobStatus::Failed;}
+                update_frontend();
+        },
+            None => error!("Failed to get thread!"),
+        }
+    });
+}
+
+fn run_queue() {
+    stop_queue();
+    
+    info!("Running: {}", Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat").to_str().unwrap());
+    
+    std::thread::spawn(||
+    {
+        unsafe {PACKAGING_STATUS = JobStatus::Running;}
+        update_frontend();
+
+        let mut index = 0;
+        while index < unsafe {QUEUE.len()} {
+            let queued_item = unsafe {&mut QUEUE[index]};
+            if queued_item.job_status == JobStatus::Waiting {
+                queued_item.job_status = JobStatus::Running;
+
+                unsafe {PACKAGING_THREAD = Some(SharedChild::spawn(Command::new(&queued_item.command)
+                .args(&queued_item.args)).unwrap())};
+
+                info!("Locking thread, waiting for UAT to complete packaging");
+                unsafe {PACKAGING_THREAD.as_ref().unwrap().wait().unwrap()};
+
+                debug!("REMOVED ITEM FROM QUEUE");
+                unsafe {QUEUE.remove(index)};
+
+                unsafe {PACKAGING_STATUS = JobStatus::Stopped;}
+                update_frontend();
+            } else {
+                index += 1;
+                debug!("Updating loop index")
+            }
+            debug!("LOOP DONE");
+        }
+        debug!("EXITED LOOP");
+    });
+}
+
+fn generate_package_command(target_platform: String, build: String) -> (String, Vec<String>) {
+    trace!("Generating package command");
+    (Path::new(&get_config().ue_directory).join("Engine/Build/BatchFiles/RunUAT.bat").to_str().unwrap().to_string(),
+    vec![String::from("BuildCookRun"),
+            String::from(&format!("-project={}", &get_project_directory())),
+            String::from(&format!("-targetplatform={}", target_platform)),
+            String::from("-pak"),
+            String::from("-unattended"),
+            String::from("-prereqs"),
+            String::from("-cook"),
+            String::from("-stage"),
+            String::from("-build"),
+            String::from("-package"),
+            String::from(&format!("-configuration={}", build)),
+            String::from("-archive"),
+            String::from(&format!("-archivedirectory={}", &get_compiled_output_directory()))
+            ])
+}
+
 fn main() {
+    log4rs::init_file("logging_config.yaml", Default::default()).unwrap();
+    trace!("Hello, World! I'm awake!");
     read_config_file();
     
     tauri::Builder::default()

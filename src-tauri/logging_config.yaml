@@ -1,0 +1,45 @@
+appenders:
+  stdout:
+    kind: console
+    filters:
+      - kind: threshold
+        level : error
+    encoder:
+      pattern: "{h({d(%Y-%m-%d %H:%M:%S)(utc)} - {l}: {m}{n})}"
+  debug_file:
+    kind: rolling_file
+    path: "logs/debug.log"
+    filters:
+      - kind: threshold
+        level : trace
+    policy:
+      trigger:
+        kind: size
+        limit: 50kb
+      roller:
+        kind: delete
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)(utc)} - {h({l})}: {m}{n}"
+  log_file:
+    kind: rolling_file
+    path: "logs/log.log"
+    filters:
+      - kind: threshold
+        level : info
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)(utc)} - {h({l})}: {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 50kb
+      roller:
+        kind: fixed_window
+        base: 1
+        count: 10
+        pattern: "log/log{}.log"
+root:
+  level: trace
+  appenders:
+    - stdout
+    - debug_file
+    - log_file

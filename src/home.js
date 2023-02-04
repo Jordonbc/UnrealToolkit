@@ -66,8 +66,8 @@ function update_ui_elements() {
 
   if (GLOBALS.packaging_client === "Running")
   {
-    package_client_button.style.background = "darkgreen";
-    package_client_button.textContent = "⏳Packaging";
+    package_client_button.style.background = "darkred";
+    package_client_button.textContent = "⏳Cancel";
   }
   else {
     package_client_button.style.background = "#0f0f0f98";
