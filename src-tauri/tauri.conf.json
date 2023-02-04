@@ -43,7 +43,9 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": [
+        "logging_config.yaml",
+      ],
       "shortDescription": "",
       "targets": "all",
       "windows": {
