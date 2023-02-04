@@ -59,6 +59,10 @@ nav #selected {
   background-color: #cccaca;
 }
 
+.open_button {
+  padding: 10px;
+}
+
 #Server {
   display: none;
 }
@@ -82,8 +86,8 @@ h1 {
 }
 
 #project_directory_input, #output_directory_input{
-  margin-right: 14px;
-  margin-left: 14px;
+  margin-right: 5px;
+  margin-left: 5px;
   display: inline-block;
 }
 
