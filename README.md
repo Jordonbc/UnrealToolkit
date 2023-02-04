@@ -8,16 +8,30 @@ Unreal Toolkit allows you to target multiple configurations and platforms, this 
 
 <p align="center"><img src=resources/Unreal_Toolkit_window.png/></p>
 
-## Features
+# Features
 - Easy to use
-- Package multiple configurations
-- Package client and server builds
-- Uses less RAM than Unreal Editor (Which allow more threads for compiling faster)
-- Ability to remove the crash reporter (reduces game size by 1.5GB, however makes crashes less user-friendly)
+- Package multiple configurations.
+- Package client and server builds.
+- Uses less RAM than Unreal Editor (Which allow more threads for compiling faster).
+- Ability to remove the crash reporter (reduces game size by 1.5GB, however makes crashes less user-friendly).
 
 ## Planned Features
-- Ability to build lighting for all or selected maps
-- Show and parse through log files from Unreal
-- Allow user to automatically create zipped archive of builds after packaging
-- Upload completed builds to external server
-- Create manifest file with error-checking for multi-version production
+- Ability to build lighting for all or selected maps.
+- Show and parse through log files from Unreal.
+- Allow user to automatically create zipped archive of builds after packaging.
+- Upload completed builds to external server.
+- Create manifest json file with error-checking for multi-version production e.g. Steam beta channels.
+
+# Disclaimer
+This application does NOT distribute Epic Games software or source code.
+
+This application requires the user to have already downloaded and installed Unreal Engine and then point Unreal Toolkit to the installation path.
+
+The term *Unreal* is owned by Epic Games, If required name can be changed.
+
+# License
+This project is licensed under the GNU General Public License v3.0.
+
+GNU General Public License v3.0 © Jordon Brooks.
+
+If you use this for your games, please consider helping me out by sponsoring 🙏
