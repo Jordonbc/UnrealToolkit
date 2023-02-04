@@ -39,6 +39,7 @@ export let server_no_crash_reporter_element;
 // global variables
 export let ue_directory;
 export let project_directory
+export let output_directory
 export let is_source;
 export let client_configuration;
 export let server_configuration;
@@ -50,6 +51,7 @@ const reload_ui_event = new Event('reload_ui');
 async function reload_variables() {
     console.log("Reloading Variables!");
     project_directory = await invoke("get_project_directory");
+    output_directory = await invoke("get_compiled_output_directory");
     ue_directory = await invoke("get_ue_directory");
     is_source = await invoke("get_is_source_directory");
     client_configuration = await invoke("get_client_configuration");

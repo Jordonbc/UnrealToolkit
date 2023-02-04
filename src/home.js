@@ -2,6 +2,7 @@ import * as GLOBALS from '/global_variables.js';
 
 function update_ui_elements() {
   GLOBALS.project_directory_input_element.value = GLOBALS.project_directory;
+  GLOBALS.output_directory_input_element.value = GLOBALS.output_directory;
 
   if (GLOBALS.server_section !== null) {
     if (GLOBALS.is_source) {
