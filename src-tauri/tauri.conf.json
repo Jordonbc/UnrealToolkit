@@ -45,6 +45,7 @@
       },
       "resources": [
         "logging_config.yaml",
+        "license"
       ],
       "shortDescription": "",
       "targets": "all",
