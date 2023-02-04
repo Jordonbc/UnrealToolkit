@@ -1,9 +1,9 @@
-name: 'test'
+name: 'release'
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - dev
-  pull_request:
+    tags:
+        - 'release*'
 
 jobs:
   test-tauri:
@@ -57,3 +57,9 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
+          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseBody: 'See the assets to download and install this version.'
+          releaseDraft: true
+          prerelease: false
