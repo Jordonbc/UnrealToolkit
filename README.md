@@ -22,6 +22,13 @@ Unreal Toolkit allows you to target multiple configurations and platforms, this 
 - Upload completed builds to external server.
 - Create manifest json file with error-checking for multi-version production e.g. Steam beta channels.
 
+# Usage
+1. Once Installed on your prefered platform go to the settings tab and locate your Unreal Engine install
+2. Go back to the Home page and select your .uproject file
+3. Set the output directory (usually something like myProjectFolder/packaged)
+4. Set the desired configuration for your project
+5. Press the package button and wait for it to change back (*planned in a future release to briefly change colour and text to show completion, if using the dev build, UE will be outputted to console*)
+
 # Disclaimer
 This application does NOT distribute Epic Games software or source code.
 
