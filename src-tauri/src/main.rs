@@ -125,6 +125,8 @@ fn main() {
     
     tauri::Builder::default()
         .setup(|app|{
+            set_main_handle(app.app_handle());
+
             set_main_window(app.get_window("main").unwrap());
 
             get_main_window().set_size(Size::Logical(LogicalSize { width: 640.0, height: 660.0 })).expect("Error setting window size!");

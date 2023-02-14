@@ -66,7 +66,9 @@ pub struct QueueElement {
     pub args: Vec<String>,
 }
 
+pub static MAIN_HANDLE: Mutex<Option<tauri::AppHandle>> = Mutex::new(None);
 pub static MAIN_WINDOW: Mutex<Option<Window>> = Mutex::new(None);
+
 pub static CONFIG: Mutex<Option<ConfigTemplate>> = Mutex::new(None);
 pub static PROJECT_DIRECTORY: Mutex<Option<String>> = Mutex::new(None);
 pub static COMPILED_OUTPUT_DIRECTORY: Mutex<Option<String>> = Mutex::new(None);
@@ -107,19 +109,18 @@ lazy_static! {
     pub static ref SERVER_CONFIGURATION: Mutex<Configuration> = Mutex::new(Configuration::new());
 }
 
-pub fn get_main_window() -> tauri::Window {
+pub fn get_window(window_label: &str) -> Option<tauri::Window> {
     trace!("getting current window reference");
 
-    match MAIN_WINDOW.lock().unwrap().clone() {
-        Some(mw) => {
-            trace!("window name: {}", mw.window.label());
-            mw.window
-        },
-        None => {
-            error!("Failed to get main window!");
-            panic!("Failed to get main window!");
-        },
-    }
+    MAIN_HANDLE.lock().unwrap().clone().unwrap().get_window(window_label)
+}
+
+pub fn set_main_handle(app_handle: tauri::AppHandle) {
+    *MAIN_HANDLE.lock().unwrap() = Some(app_handle);
+}
+
+pub fn get_main_window() -> tauri::Window {
+    get_window("main").unwrap()
 }
 
 pub fn set_main_window(new_window: tauri::Window) {
