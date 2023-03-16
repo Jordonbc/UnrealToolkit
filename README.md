@@ -1,4 +1,4 @@
-[![GitHub release](https://img.shields.io/github/release/Jordonbc/UnrealToolkit)](https://github.com/Jordonbc/UnrealToolkit/releases/) ![open issues](https://img.shields.io/github/issues-raw/Jordonbc/UnrealToolkit) ![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=104) ![made-with-rust](https://img.shields.io/badge/Made%20With-Rust-Green) ![GitHub last commit](https://img.shields.io/github/last-commit/jordonbc/UnrealToolkit)
+[![GitHub release](https://img.shields.io/github/release/Jordonbc/UnrealToolkit)](https://github.com/Jordonbc/UnrealToolkit/releases/) ![open issues](https://img.shields.io/github/issues-raw/Jordonbc/UnrealToolkit) ![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=104) ![made-with-rust](https://img.shields.io/badge/Made%20With-Rust-Green) ![GitHub last commit](https://img.shields.io/github/last-commit/jordonbc/UnrealToolkit/dev)
 # UnrealToolkit
 Unreal Toolkit aims to make the process of packaging easier and potentially faster. With this program you’re able to package an Unreal Engine game without ever needing to open up the Editor.
 
